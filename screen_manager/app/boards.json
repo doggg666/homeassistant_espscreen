@@ -41,7 +41,12 @@
   "can_standby": true,
   "catalog": {
    "calibrate": false,
-   "choices": {},
+   "choices": {
+    "CROWPANEL_REVISION": [
+     "V1.1 / V1.2",
+     "V1.0"
+    ]
+   },
    "inch": 10.1,
    "model": "Advanced 10.1 ESP32-P4",
    "name": "CrowPanel",
@@ -4821,7 +4826,12 @@
   "can_standby": true,
   "catalog": {
    "calibrate": false,
-   "choices": {},
+   "choices": {
+    "CROWPANEL_REVISION": [
+     "V1.1 / V1.2",
+     "V1.0"
+    ]
+   },
    "inch": 10.1,
    "model": "Advanced 10.1 ESP32-P4",
    "name": "CrowPanel",
@@ -6880,7 +6890,12 @@
   "can_standby": true,
   "catalog": {
    "calibrate": false,
-   "choices": {},
+   "choices": {
+    "CROWPANEL_REVISION": [
+     "V1.1 / V1.2",
+     "V1.0"
+    ]
+   },
    "inch": 10.1,
    "model": "Advanced 10.1 ESP32-P4",
    "name": "CrowPanel",

@@ -100,6 +100,20 @@ class Choices(unittest.TestCase):
     def profile(self, **extra):
         return core.installation_yaml({'board': 'cyd', 'name': 'hall', 'friendly_name': 'Hall', **extra})
 
+    def test_crowpanel_revision_selects_its_sdio_wiring(self):
+        profile = {'board': 'crowpanel101', 'name': 'hall', 'friendly_name': 'Hall'}
+        default = core.installation_yaml(profile)
+        selected = core.installation_yaml({**profile, 'choices': {'CROWPANEL_REVISION': 'V1.0'}})
+        self.assertNotIn('CROWPANEL_REVISION', default)
+        self.assertIn('  CROWPANEL_REVISION: "V1.0"\n', selected)
+
+        values = profiles.raw_substitutions(ROOT / 'checkout/crowpanel101.yaml')
+        pins = ('HOSTED_SDIO_BUS_WIDTH', 'HOSTED_D0_PIN', 'HOSTED_D1_PIN', 'HOSTED_D2_PIN', 'HOSTED_D3_PIN')
+        later = profiles.evaluate(values)
+        early = profiles.evaluate({**values, 'CROWPANEL_REVISION': 'V1.0'})
+        self.assertEqual(tuple(str(later[key]) for key in pins), ('4', 'GPIO17', 'GPIO16', 'GPIO15', 'GPIO14'))
+        self.assertEqual(tuple(str(early[key]) for key in pins), ('1', 'GPIO14', 'GPIO15', 'GPIO16', 'GPIO17'))
+
     def test_a_choice_other_than_the_board_files_own_is_a_line_of_the_screens_substitutions(self):
         text = self.profile(choices={'DISPLAY_MODEL': 'ST7789V'})
         substitutions = re.search(r'(?ms)^substitutions:\n(.*?)\n\n', text)[1]

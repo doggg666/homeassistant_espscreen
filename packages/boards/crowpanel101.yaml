@@ -4,8 +4,8 @@
 # 1024x600 at 117 dpi, the standard look, a grid of 5 x 5 cells lying down, as on the 10.1-inch Guition, and 4 x 6 standing up.
 # The panel is 1024x600 itself, so it lies down without a turn. Built from Elecrow's own ESPHome example for the
 # CrowPanel Advanced P4 boards (V1.1) and from the configuration a community member ran on a V1.2 board (GitHub #116):
-# the two agree pin for pin. That member tried pages, tiles, dimming and waking on the glass; the rest is in
-# docs/CROWPANEL101.md. The loudspeaker and the PDM microphone are the screen's audio (features/audio.yaml), on two I2S
+# the two agree pin for pin. V1.0 selects the factory C6's one-bit SDIO link. The results from the V1.2 board
+# are in docs/CROWPANEL101.md. The loudspeaker and the PDM microphone are the screen's audio (features/audio.yaml), on two I2S
 # buses; the LoRa socket, the SD card and the UARTs are not configured here. Only boards with a pre-v3 ESP32-P4 ("chip revision: v1.3" in the boot log) boot this firmware.
 #
 # A board file is the board's hardware, the facts the shared tree takes from it (its glass and its grid), and the
@@ -58,13 +58,16 @@ substitutions:
   SCREEN_MAX_BAR_ITEMS: "12"                   # a wider top bar where the glass has the width for it
   LVGL_BUFFER_SIZE: "50%"                       # LVGL's draw buffer as a share of the screen, as on the other P4 boards
 
-  # The Wi-Fi link and the touch bus on this board's own pins (hardware/esp32p4-c6.yaml has the Guition's): its data
-  # lines run the other way round, D0 on GPIO17 to D3 on GPIO14, and the C6's reset is GPIO32.
+  # The revision is printed on the board. V1.0 uses D0 on GPIO14 and D1 (interrupt) on GPIO15.
+  # V1.1 and V1.2 use four data lines in reverse order, D0 on GPIO17 to D3 on GPIO14.
+  CROWPANEL_REVISION: "V1.1 / V1.2"
+  HOSTED_SDIO_BUS_WIDTH: '${ 1 if CROWPANEL_REVISION == "V1.0" else 4 }'
   HOSTED_RESET_PIN: GPIO32
-  HOSTED_D0_PIN: GPIO17
-  HOSTED_D1_PIN: GPIO16
-  HOSTED_D2_PIN: GPIO15
-  HOSTED_D3_PIN: GPIO14
+  HOSTED_D0_PIN: '${ "GPIO14" if CROWPANEL_REVISION == "V1.0" else "GPIO17" }'
+  HOSTED_D1_PIN: '${ "GPIO15" if CROWPANEL_REVISION == "V1.0" else "GPIO16" }'
+  # ESPHome validates the full pin map. ESP-Hosted configures D2 and D3 only in four-bit mode.
+  HOSTED_D2_PIN: '${ "GPIO16" if CROWPANEL_REVISION == "V1.0" else "GPIO15" }'
+  HOSTED_D3_PIN: '${ "GPIO17" if CROWPANEL_REVISION == "V1.0" else "GPIO14" }'
   TOUCH_SDA: GPIO45
   TOUCH_SCL: GPIO46
 

@@ -3241,12 +3241,14 @@
       "choice": {
         "DISPLAY_MODEL": "Display controller",
         "FLASH_SIZE": "Flash memory",
-        "BOARD_VARIANT": "Board"
+        "BOARD_VARIANT": "Board",
+        "CROWPANEL_REVISION": "Hardware revision"
       },
       "choice_hint": {
         "DISPLAY_MODEL": "Start with the first. Take the other when the screen stays black or shows noise or a garbled picture.",
         "FLASH_SIZE": "Most of these boards have 16 MB. Take 8 MB when the screen stays black after the install and keeps starting again.",
-        "BOARD_VARIANT": "Take the one you have. On the yellow board without a case, a tap on the top left would otherwise land on the bottom right."
+        "BOARD_VARIANT": "Take the one you have. On the yellow board without a case, a tap on the top left would otherwise land on the bottom right.",
+        "CROWPANEL_REVISION": "Match the revision printed on the back of the board. It determines how the screen connects to Wi-Fi."
       },
       "choice_option": {
         "BOARD_VARIANT": {

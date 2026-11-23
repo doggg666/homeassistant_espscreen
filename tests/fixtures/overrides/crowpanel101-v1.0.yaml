@@ -1,0 +1,3 @@
+# Exercise the one-bit SDIO profile alongside the default four-bit build.
+substitutions:
+  CROWPANEL_REVISION: "V1.0"

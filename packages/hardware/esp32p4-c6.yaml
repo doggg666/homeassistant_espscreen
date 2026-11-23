@@ -10,6 +10,7 @@ packages:
   core: !include esp32p4-core.yaml
 
 substitutions:
+  HOSTED_SDIO_BUS_WIDTH: "4"
   HOSTED_SDIO_FREQUENCY: "40MHz"
   HOSTED_RESET_PIN: GPIO54
   HOSTED_CMD_PIN: GPIO19
@@ -29,9 +30,11 @@ esp_ldo:
     id: dsi_phy_enable
     voltage: 2.5V
 
-# The P4 has no radio: an ESP32-C6 beside it does the Wi-Fi over a four-bit SDIO bus.
+# The P4 has no radio: an ESP32-C6 beside it does the Wi-Fi over SDIO.
+# In one-bit mode ESP-Hosted uses the ESP32-P4 slot 1 default of GPIO15 for the D1 interrupt.
 esp32_hosted:
   variant: esp32c6
+  bus_width: ${HOSTED_SDIO_BUS_WIDTH}
   reset_pin: ${HOSTED_RESET_PIN}
   cmd_pin: ${HOSTED_CMD_PIN}
   clk_pin: ${HOSTED_CLK_PIN}

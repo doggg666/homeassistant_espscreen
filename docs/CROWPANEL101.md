@@ -10,9 +10,10 @@ been checked yet (see "What to report while testing" below).
 
 ## Which board
 
-- **Hardware revision V1.1 or V1.2.** From V1.1 on, Elecrow runs the Wi-Fi link's data lines the other way round
-  (D0 on GPIO17 to D3 on GPIO14), and this board file follows that. A V1.0 board has them on GPIO14 to GPIO17 and does
-  not get Wi-Fi with this file. The revision is printed on the back of the board.
+- **Hardware revision V1.0, V1.1 or V1.2.** The revision is printed on the back of the board. V1.0 uses the factory
+  Wi-Fi coprocessor's one-bit SDIO link. V1.1 and V1.2 use four data lines in reverse order and are the default for
+  existing profiles. A V1.0 panel booted firmware 0.63.0, rejoined Wi-Fi and accepted an ESPHome API connection after
+  a USB upgrade. Display, touch and audio still need hardware checks on V1.0.
 - **An ESP32-P4 before silicon revision 3.** The firmware is built for the earlier silicon (`engineering_sample: true`,
   360 MHz), as Elecrow's own example is. A board with rev3 silicon does not boot it, and a successful flash over USB
   does not mean otherwise. The chip revision is in the first lines of the USB log ("chip revision: v1.3").
@@ -20,14 +21,22 @@ been checked yet (see "What to report while testing" below).
 ## Install
 
 Update Tessera Screen Manager and choose **CrowPanel · 10.1 inch, Advanced 10.1 ESP32-P4** (marked Experimental) in
-**New screen**. Follow [Easy setup](EASY_SETUP.md) to create a profile with its own name, Wi-Fi references and unique
-API/OTA keys. Choose the correct USB port, or download the firmware to flash with ESPHome Web from your own computer.
+**New screen**. Select the **Hardware revision** printed on the board. Follow [Easy setup](EASY_SETUP.md) to create a
+profile with its own name, Wi-Fi references and unique API/OTA keys. Choose the correct USB port, or download the
+firmware to flash with ESPHome Web from your own computer.
 Keep an existing working profile if the board is already installed. Tessera adds it to Home Assistant by itself once it
 is on your Wi-Fi; then add its tiles.
 
 The remote package is `packages/crowpanel101.yaml` and the checkout entry `checkout/crowpanel101.yaml`. Each combines
 `packages/core.yaml` with the board file `packages/boards/crowpanel101.yaml`. The ESP32-P4, its memory and its ESP32-C6
 come from `packages/hardware/esp32p4-c6.yaml`, with this board's own pins in the board file.
+
+For a V1.0 build with the ESPHome CLI, set `CROWPANEL_REVISION` to `"V1.0"` in the profile's `substitutions:`.
+When [building from this checkout](../checkout/README.md), you can select it on the command line:
+
+```sh
+esphome -s CROWPANEL_REVISION V1.0 run checkout/crowpanel101.yaml
+```
 
 ## Layout and capabilities
 
@@ -47,10 +56,13 @@ come from `packages/hardware/esp32p4-c6.yaml`, with this board's own pins in the
 
 - [Elecrow's wiki for this board](https://www.elecrow.com/wiki/CrowPanel_Advanced_10.1inch_ESP32-P4_HMI_AI_Display_1024x600_IPS.html)
   and Elecrow's ESPHome example for the CrowPanel Advanced P4 boards, which this board file follows.
+- [Elecrow's ESP-Hosted settings for one-bit SDIO](https://www.elecrow.com/wiki/CrowPanel-Advanced-7-9-10.1inch-ESP32-P4-HMI-AI-Voice-Chat-Robot.html).
+- [Elecrow's V1.0 schematic](https://github.com/Elecrow-RD/CrowPanel-Advanced-10.1inch-ESP32-P4-HMI-AI-Display-1024x600-IPS-Touch-Screen/blob/master/Eagle_SCH%26PCB/1.0/ESP32-P4%20Display%2010.1%20inch%20V1.0.sch).
 - [ESPHome MIPI DSI](https://esphome.io/components/display/mipi_dsi/): the panel uses ESPHome's own
   `model: WAVESHARE-ESP32-P4-WIFI6-TOUCH-LCD-7B`, the EK79007 at 1024 x 600, with the reset on GPIO41.
 - The pins:
-  - Wi-Fi: ESP32-C6 over four-bit SDIO, reset GPIO32, CMD GPIO19, CLK GPIO18, D0 to D3 on GPIO17 to GPIO14.
+  - Wi-Fi: ESP32-C6 over SDIO at 40 MHz, reset GPIO32, CMD GPIO19, CLK GPIO18. V1.0 uses D0 GPIO14 and the D1
+    interrupt on GPIO15. V1.1 and V1.2 use D0 to D3 on GPIO17 to GPIO14.
   - The chip's internal regulators on channels 3 and 4, both at 2.5 V.
   - I2C: SDA GPIO45, SCL GPIO46, 400 kHz, for the GT911 (reset GPIO40, interrupt GPIO42).
   - Backlight: GPIO31, PWM; panel power GPIO29.
